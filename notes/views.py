@@ -8,7 +8,7 @@ from .serializers import NoteSerializer
 from rest_framework import status
 
 
-@api_view(["POST"])
+@api_view(["POST, GET"])
 def notes_lyric(request):
     if request.method == "POST":
         serializer = NoteSerializer(data=request.data)
@@ -18,3 +18,8 @@ def notes_lyric(request):
     
 
         return Response(data={"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == "GET":
+        notes = Note.objects.all()
+        serializer = NoteSerializer(data=notes,many=True)
+        return Response(data=serializer, status=status.HTTP_200_OK)
