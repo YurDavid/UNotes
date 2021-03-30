@@ -20,3 +20,18 @@ def notes_list(request):
         notes = Note.objects.all()
         serializer = NoteSerializer(notes,many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+@api_view(["PUT"])
+def notes_detail(request, pk):
+    try:
+        notes = Note.objects.get(pk=pk)
+    except Lyric.DoesNotExist:
+        return Response(data={"error": "Notes not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "PUT":
+        serializer = NoteSerializer(notes, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(data={"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
