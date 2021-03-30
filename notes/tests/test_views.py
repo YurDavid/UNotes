@@ -1,6 +1,7 @@
 from django.urls import reverse
 
 from rest_framework.test import APITestCase, APIClient
+from rest_framework import status
 
 from notes.models import Note
 
@@ -69,3 +70,15 @@ class NoteListingTest(APITestCase):
         self.assertEqual(len(response.json()), self.existing_note_number)  # Test that 10 notes are returned
 
         notes = response.json()
+
+    def test_get_update_success(self):
+        """
+        Tests that a changes made in the code are saved and made
+        """
+        notelist = Note.objects.get(pk=1)
+        updated = {'title':"Something new", 'content':"so accept my request"}
+        res = self.client.put(
+            reverse('notes_detail', args=(notelist.pk,)),
+            updated
+        )
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
